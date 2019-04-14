@@ -1,0 +1,205 @@
+<p>
+	<br />
+</p>
+<p style="color:#333333;font-family:verdana, Arial, Helvetica, sans-serif;font-size:14px;background-color:#FFFFFF;">
+	今天在一个Ubuntu的虚拟机里遇到编码相关的问题：
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+	<div class="cnblogs_code_toolbar" style="margin:5px 0px 0px;padding:0px;">
+		<span class="cnblogs_code_copy" style="line-height:1.8;"><a><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码" style="height:auto;" /></a></span> 
+	</div>
+<pre><span style="line-height:1.8;">perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+    LANGUAGE </span>=<span style="line-height:1.8;"> (unset),
+    LC_ALL </span>=<span style="line-height:1.8;"> (unset),
+    LANG </span>= <span style="line-height:1.8;color:#800000;">"</span><span style="line-height:1.8;color:#800000;">zh_CN.UTF-8</span><span style="line-height:1.8;color:#800000;">"</span><span style="line-height:1.8;"> are supported and installed on your system.</span></pre>
+	<div class="cnblogs_code_toolbar" style="margin:5px 0px 0px;padding:0px;">
+		<span class="cnblogs_code_copy" style="line-height:1.8;"><a><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码" style="height:auto;" /></a></span> 
+	</div>
+</div>
+<p style="color:#333333;font-family:verdana, Arial, Helvetica, sans-serif;font-size:14px;background-color:#FFFFFF;">
+	解决办法就是安装zh包：
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+<pre>apt-<span style="line-height:1.8;color:#0000FF;">get</span> install language-pack-zh-hans</pre>
+</div>
+<p style="color:#333333;font-family:verdana, Arial, Helvetica, sans-serif;font-size:14px;background-color:#FFFFFF;">
+	安装完后，就可以显示中文字符了。
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">1、安装对应的包</span><br />
+<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">apt-get install hostapd rng-tools&nbsp;</span><span style="color:#999999;font-family:&quot;font-size:14px;background-color:#EEF0F4;">dnsmasq</span> 
+</p>
+<p>
+	<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">2、sudo vim /etc/default/hostapd&nbsp;&nbsp;</span> 
+</p>
+<p>
+	<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">取消备注#</span><span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">DAEMON_CONF=""</span> 
+</p>
+<p>
+	<span style="background-color:#FFFFFF;">修改为<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">DAEMON_CONF="/etc/hostapd/hostapd.conf"</span><br />
+</span><span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">3、改 /etc/hostapd/hostapd.conf</span> 
+</p>
+<p>
+	<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;"> </span> 
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+<pre class="prettyprint">ctrl_interface=/var/run/hostapd
+ctrl_interface_group=0
+ssid=SXJ-Test
+hw_mode=a
+channel=44
+interface=wlan0
+#bridge=br0
+driver=nl80211
+ignore_broadcast_ssid=0
+macaddr_acl=0
+wmm_enabled=1
+auth_algs=1
+ieee80211n=1
+require_ht=1
+ht_capab=[HT40+][SHORT-GI-20][SHORT-GI-40][DSSS_CCK-40]
+ieee80211ac=1
+require_vht=1
+vht_capab=[MAX-MPDU-3895][SHORT-GI-80][SU-BEAMFORMEE]
+vht_oper_chwidth=1
+vht_oper_centr_freq_seg0_idx=42
+basic_rates=60 90 120 180 240 360 480 540
+disassoc_low_ack=0
+wpa=2
+wpa_passphrase=38888888
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+
+</pre>
+</div>
+<br />
+<p>
+	<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">4、改 /etc/network/interface</span><br />
+<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">在原来的eth0基本上增加</span> 
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+<pre class="prettyprint">allow-hotplug wlan0
+iface wlan0 inet static
+address 10.0.0.1
+netmask 255.255.255.0</pre>
+</div>
+<p>
+	<br />
+</p>
+<p>
+	<br />
+</p>
+<p>
+	5.&nbsp;<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">systemctl enable hostapd</span> 
+</p>
+<p>
+	<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;"></span> 
+</p>
+<p style="font-family:&quot;font-size:16px;color:#4F4F4F;background-color:#FFFFFF;">
+	提示如下信息
+</p>
+<blockquote style="color:rgba(0, 0, 0, 0.5);background:#EEF0F4;font-family:-apple-system, &quot;font-size:14px;">
+	<p style="font-family:&quot;color:#999999;">
+		Failed to start nginx.service: Unit nginx.service is masked.
+	</p>
+</blockquote>
+<p style="font-family:&quot;font-size:16px;color:#4F4F4F;background-color:#FFFFFF;">
+	执行如下指令
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+<pre>systemctl unmask nginx<span class="hljs-preprocessor" style="font-family:&quot;font-size:inherit;color:#009900 !important;">.service</span></pre>
+</div>
+<p>
+	<br />
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;"><span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">6、配置<span style="color:#4F4F4F;font-family:&quot;font-size:14px;background-color:#F6F8FA;">sudo vim /etc/dnsmasq</span><span class="hljs-built_in" style="font-family:&quot;color:#4F4F4F;font-size:14px;">.</span><span style="color:#4F4F4F;font-family:&quot;font-size:14px;background-color:#F6F8FA;">conf</span></span><br />
+<span style="color:#444444;font-family:Tahoma, &quot;font-size:14px;background-color:#FFFFFF;">增加：&nbsp;</span> </span> 
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+<pre class="prettyprint">interface=wlan0
+dhcp-range=10.0.0.2,10.0.0.100,12h
+dhcp-option=6,10.0.0.1</pre>
+</div>
+<p>
+	7.设置IPv4转发
+</p>
+<p>
+	<span style="color:#999999;font-family:&quot;font-size:14px;background-color:#EEF0F4;">完成以上操作后，你会发现即使你连接上了Wi-Fi，可无法上网，因为我们连接到无线网卡wlan0上，设备传输进来的数据并没有转发到 eth0 上。因此，我们需要配置相应的IPv4的转发规则，来打通数据的传输。</span> 
+</p>
+<p>
+	<br />
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+<pre class="prettyprint lang-bsh">// 打开sysctl.conf文件
+sudo vim /etc/sysctl.conf
+// 去掉“#net.ipv4.ip_forward=1”前的#注释
+
+// 立即生效
+sudo sh -c "echo 1 &gt; /proc/sys/net/ipv4/ip_forward"
+// 在WiFi的配置接口eth0接口wlan0之间建立NAT，分享有线网到无线上
+
+#sudo iptables -A INPUT -p tcp --dport 139 -j ACCEPT
+#sudo iptables -A OUTPUT -p tcp --sport 139 -j ACCEPT
+#sudo iptables -A INPUT -p tcp --dport 445 -j ACCEPT
+#sudo iptables -A OUTPUT -p tcp --sport 445 -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
+
+// 将这些规应用于我们的每一次启动PI
+sudo sh -c "iptables-save &gt; /etc/iptables.ipv4.nat"
+sudo vim /etc/rc.local
+// 添加如下行，在 exit 0 之前
+iptables-restore &lt; /etc/iptables.ipv4.nat
+</pre>
+</div>
+<p>
+	<br />
+</p>
+<p>
+	<br />
+</p>
+<p>
+	8.重启服务(非必须操作)
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+	<p>
+		sudo service dhcpcd restart<br />
+sudo service hostapd start<br />
+sudo service dnsmasq start<br />
+sudo reboot
+	</p>
+</div>
+<p>
+	<br />
+对于dnsmasq经常会出现问题，原因是wlan0还没热启动完成，而dnsmasq先启动了，所以出现了启动失败的现象。&nbsp;<br />
+这里的解决方案就是采用延时启动。
+</p>
+<div class="cnblogs_code" style="margin:5px 0px;padding:5px;background-color:#F5F5F5;border:1px solid #CCCCCC;font-family:&quot;">
+	// 打开管理启动<br />
+sudo vim /etc/rc.local<br />
+// 添加如下行，在 exit 0 之前<br />
+sudo bash /etc/dnsmasq_delayinit.sh<br />
+<br />
+// 然后编辑dnsmasq_delayinit.sh<br />
+sudo vim /etc/dnsmasq_delayinit.sh<br />
+#!/bin/sh<br />
+sleep 10<br />
+sudo service dnsmasq restart<br />
+<br />
+// 再设置成可执行<br />
+sudo chmod +x /etc/dnsmasq_delayinit.sh<br />
+</div>
+<br />
+现在就可以愉快的上网了。只是在树莓派开机后要稍微等一下。
+<p>
+	<br />
+</p>
